@@ -1,4 +1,4 @@
-name: Собираем и релизим u-matrix
+name: Build and Release Electron App
 
 on:
   push:
@@ -11,29 +11,30 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]  # Сборка для Windows, macOS и Linux
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Проверка кода
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Установка Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'npm'
 
-      - name: Установка зависимостей
+      - name: Install dependencies
         run: npm install
 
-      - name: build
+      - name: Build project
         run: npm run build
 
-      - name: make
+      - name: Create installers
         run: npm run make
 
-      - name: installers
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: installer-${{ matrix.os }}
           path: out/
+          retention-days: 5  # Автоматическое удаление артефактов через 5 дней
