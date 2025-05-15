@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {Button, Stack, Heading } from "@chakra-ui/react";
 
 function App() {
     useEffect(() => {
@@ -36,26 +37,21 @@ function App() {
 
 
     return (
-        <div>
-            <h1>Hello Electron + React3!</h1>
+        <Stack direction={"column"}>
+            <Heading as={"h3"}>Hello Electron + React3!</Heading>
             <div>
                 Кликов: {count}
             </div>
-            <div>
-                <button value={"Кликер"} onClick={() => {
-                    setCount(count + 1);
-                }}>Кликер2
-                </button>
-            </div>
-            <div>
-                <p>
-                    <button value={"Сохранить в файл"} onClick={() => {
-                        saveFile("ttt.txt", count.toString());
-                    }}>Сохранить в файл
-                    </button>
-                </p>
-            </div>
-        </div>
+
+            <Button colorScheme='blue' onClick={() => {
+                setCount(count + 1);
+            }}>Кликер чакры</Button>
+
+            <Button onClick={() => {
+                saveFile("ttt.txt", count.toString());
+            }}>Сохранить в файл
+            </Button>
+        </Stack>
     );
 }
 
