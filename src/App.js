@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Stack, Heading } from "@chakra-ui/react";
+import MatrixTabs from "./features/matrix/components/MatrixTabs";
 
 function App() {
     useEffect(() => {
@@ -37,21 +38,22 @@ function App() {
 
 
     return (
-        <Stack direction={"column"}>
-            <Heading as={"h3"}>Hello Electron + React3!</Heading>
-            <div>
-                Кликов: {count}
-            </div>
-
-            <Button colorScheme='blue' onClick={() => {
-                setCount(count + 1);
-            }}>Кликер чакры</Button>
-
-            <Button onClick={() => {
-                saveFile("ttt.txt", count.toString());
-            }}>Сохранить в файл
-            </Button>
-        </Stack>
+        <MatrixTabs></MatrixTabs>
+        // <Stack direction={"column"}>
+        //     <Heading as={"h3"}>Hello Electron + React3!</Heading>
+        //     <div>
+        //         Кликов: {count}
+        //     </div>
+        //
+        //     <Button colorScheme='blue' onClick={() => {
+        //         setCount(count + 1);
+        //     }}>Кликер чакры</Button>
+        //
+        //     <Button onClick={() => {
+        //         saveFile("ttt.txt", count.toString());
+        //     }}>Сохранить в файл
+        //     </Button>
+        // </Stack>
     );
 }
 
