@@ -1,5 +1,5 @@
-import { Tab } from '../models/Tab';
-import { Task } from '../models/Task';
+import { Tab } from '../models/UTab';
+import { Task } from '../models/UTask';
 
 export function addTab(data, { title, color }) {
     const newTab = new Tab({ title, color });

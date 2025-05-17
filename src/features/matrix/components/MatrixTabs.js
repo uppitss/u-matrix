@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import {
     Tabs,
     TabList,
@@ -12,34 +12,42 @@ import {
     Text,
     IconButton,
     useColorModeValue,
-    Flex
+    Flex, Button
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
+import {readAppData, saveAppData} from "../services/ioService";
+import {UTab} from "../model/UTab";
 
 const MatrixTabs = () => {
-    const [tabs, setTabs] = useState([
-        { id: '1', title: 'Работа', color: 'blue.500' },
-        { id: '2', title: 'Личное', color: 'green.500' }
-    ]);
+    useMemo(async () => {
+        const appData = await readAppData();
+        console.log("APPDATA");
+        console.log(appData)
+        setAppData(appData)
+    },[])
+    const [appData, setAppData] = useState({tabs:[]});
     const [activeTab, setActiveTab] = useState(0);
 
     const quadrantBg = useColorModeValue('gray.100', 'gray.700');
     const quadrantBorder = useColorModeValue('gray.200', 'gray.600');
 
     const addTab = () => {
-        const newTab = {
-            id: Date.now().toString(),
-            title: `Новая вкладка ${tabs.length + 1}`,
-            color: `hsl(${Math.random() * 360}, 70%, 50%)`
-        };
-        setTabs([...tabs, newTab]);
-        setActiveTab(tabs.length);
+        const newTab = new UTab(`Новая вкладка ${appData.tabs.length + 1}`,`hsl(${Math.random() * 360}, 70%, 50%)`, appData.tabs.length+1);
+        console.log("newTab");
+        console.log(newTab);
+        setAppData(prevState => {
+            prevState.tabs = [...prevState.tabs, newTab];
+        return prevState;});
+        setActiveTab(appData.tabs.length);
     };
 
     const removeTab = (index) => {
-        const newTabs = tabs.filter((_, i) => i !== index);
-        setTabs(newTabs);
-        setActiveTab(Math.min(activeTab, newTabs.length - 1));
+        console.log("RemoveTab Index="+index);
+        setAppData(prevState => {
+            prevState.tabs = [...prevState.tabs.filter((_, i) => i !== index)];
+            return prevState;
+        });
+        setActiveTab(Math.min(activeTab, appData.tabs.length - 2));
     };
 
     return (
@@ -62,7 +70,7 @@ const MatrixTabs = () => {
                 overflow="hidden"
             >
                 <TabList overflowX="auto" overflowY="hidden">
-                    {tabs.map((tab, index) => (
+                    {appData.tabs.map((tab, index) => (
                         <Tab
                             key={tab.id}
                             _selected={{ color: 'white', bg: tab.color }}
@@ -95,7 +103,7 @@ const MatrixTabs = () => {
                     minHeight="0" // Важно для корректного растягивания в Flex
                     overflow="hidden"
                 >
-                    {tabs.map((tab) => (
+                    {appData.tabs.map((tab) => (
                         <TabPanel
                             key={tab.id}
                             p={0}

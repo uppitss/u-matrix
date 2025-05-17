@@ -1,4 +1,5 @@
-import { AppData } from '../models/AppData';
+import {AppData} from "../model/AppData";
+
 
 export function serialize(data) {
     return JSON.stringify(data, null, 2);

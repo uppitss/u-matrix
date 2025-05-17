@@ -1,7 +1,7 @@
-import { generateId } from '../../utils/idGenerator';
 import { QUADRANTS } from '../constants/quadrants';
+import {generateId} from "../utils/idGenerator";
 
-export class Task {
+export class UTask {
     constructor({
                     id = generateId(),
                     text = '',
