@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
     Tabs,
     TabList,
@@ -18,15 +18,14 @@ import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import {readAppData, saveAppData} from "../services/ioService";
 import {UTab} from "../model/UTab";
 
-const MatrixTabs = () => {
-    useMemo(async () => {
-        const appData = await readAppData();
-        console.log("APPDATA");
-        console.log(appData)
-        setAppData(appData)
-    },[])
-    const [appData, setAppData] = useState({tabs:[]});
+const MatrixTabs = (props) => {
+
+    const [appData, setAppData] = useState(props.appData);
     const [activeTab, setActiveTab] = useState(0);
+
+    useEffect(() => {
+        //saveAppData(appData);
+    }, [appData,appData.tabs]);
 
     const quadrantBg = useColorModeValue('gray.100', 'gray.700');
     const quadrantBorder = useColorModeValue('gray.200', 'gray.600');
@@ -35,9 +34,11 @@ const MatrixTabs = () => {
         const newTab = new UTab(`Новая вкладка ${appData.tabs.length + 1}`,`hsl(${Math.random() * 360}, 70%, 50%)`, appData.tabs.length+1);
         console.log("newTab");
         console.log(newTab);
-        setAppData(prevState => {
-            prevState.tabs = [...prevState.tabs, newTab];
-        return prevState;});
+         setAppData(prevState => {
+             prevState.tabs = [...prevState.tabs, newTab];
+         return prevState;});
+
+
         setActiveTab(appData.tabs.length);
     };
 
