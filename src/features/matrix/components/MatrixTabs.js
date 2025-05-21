@@ -5,14 +5,13 @@ import {
     Tab,
     TabPanels,
     TabPanel,
-    Box,
     Grid,
     GridItem,
     Heading,
     Text,
     IconButton,
     useColorModeValue,
-    Flex, Button
+    Flex
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import {readAppData, saveAppData} from "../services/ioService";
@@ -25,7 +24,7 @@ const MatrixTabs = (props) => {
 
     useEffect(() => {
         console.log("EFFECT APPDATA");
-        //saveAppData(appData);
+        saveAppData(appData);
     }, [appData,appData.tabs]);
 
     const quadrantBg = useColorModeValue('gray.100', 'gray.700');
