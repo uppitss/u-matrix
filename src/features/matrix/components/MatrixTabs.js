@@ -24,6 +24,7 @@ const MatrixTabs = (props) => {
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
+        console.log("EFFECT APPDATA");
         //saveAppData(appData);
     }, [appData,appData.tabs]);
 

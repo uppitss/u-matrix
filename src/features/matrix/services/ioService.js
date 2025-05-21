@@ -5,6 +5,7 @@ import {AppData} from "../model/AppData";
 import App from "../../../App";
 
 const filePath = "matrix.json"
+
 // Чтение файла
 const readFile = async (filePath) => {
     return new Promise((resolve, reject) =>{
@@ -19,7 +20,8 @@ const readFile = async (filePath) => {
 
 // Сохранение файла
 const saveFile = async (filePath, content) => {
-   return new Promise((resolve,reject)=>{
+    window.electronAPI.writeFile(filePath, content);
+    return new Promise((resolve,reject)=>{
        try {
            window.electronAPI.writeFile(filePath, content).then(resolve(true));
        } catch (err) {
@@ -29,9 +31,9 @@ const saveFile = async (filePath, content) => {
 
 };
 
-export const saveAppData = (data)=>{
+export const saveAppData = async (data)=>{
     const serialized = serialize(data);
-    saveFile(filePath,serialized);
+    await saveFile(filePath,serialized);
 }
 export  const readAppData = async () =>{
     const fileData = await readFile(filePath);

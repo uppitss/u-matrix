@@ -1,5 +1,4 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Button, Stack, Heading} from "@chakra-ui/react";
 import MatrixTabs from "./features/matrix/components/MatrixTabs";
 import LoadingSpinner from "./features/matrix/components/LoadingSpinner";
 import {readAppData} from "./features/matrix/services/ioService";
@@ -9,12 +8,13 @@ function App() {
     const [appData, setAppData] = useState(undefined)
 
     useMemo(async () => {
+        console.log("APPJS useMemo start")
         const appData = await readAppData();
         setAppData(appData)
     },[])
     useEffect(()=>{
         if (appData !== undefined){
-            console.log(appData)
+            console.log("setIsLoading")
             setIsLoading(false);
         }
     },[appData]);
