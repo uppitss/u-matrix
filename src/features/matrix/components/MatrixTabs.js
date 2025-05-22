@@ -24,7 +24,9 @@ const MatrixTabs = (props) => {
 
     useEffect(() => {
         console.log("EFFECT APPDATA");
-        saveAppData(appData);
+        if (process.env.NODE_ENV !== 'development') {
+            saveAppData(appData);
+        }
     }, [appData,appData.tabs]);
 
     const quadrantBg = useColorModeValue('gray.100', 'gray.700');
