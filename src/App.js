@@ -8,13 +8,11 @@ function App() {
     const [appData, setAppData] = useState(undefined)
 
     useMemo(async () => {
-        console.log("APPJS useMemo start")
         const appData = await readAppData();
         setAppData(appData)
     },[])
     useEffect(()=>{
         if (appData !== undefined){
-            console.log("setIsLoading")
             setIsLoading(false);
         }
     },[appData]);

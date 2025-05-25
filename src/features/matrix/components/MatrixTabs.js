@@ -13,7 +13,7 @@ import {
     useColorModeValue,
     Flex
 } from '@chakra-ui/react';
-import { AddIcon, CloseIcon } from '@chakra-ui/icons';
+import {AddIcon, CloseIcon} from '@chakra-ui/icons';
 import {readAppData, saveAppData} from "../services/ioService";
 import {UTab} from "../model/UTab";
 
@@ -23,34 +23,46 @@ const MatrixTabs = (props) => {
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
-        console.log("EFFECT APPDATA");
+        console.log("Change APPDATA");
         if (process.env.NODE_ENV !== 'development') {
             saveAppData(appData);
         }
-    }, [appData,appData.tabs]);
+    }, [appData.tabs.length]);
 
     const quadrantBg = useColorModeValue('gray.100', 'gray.700');
     const quadrantBorder = useColorModeValue('gray.200', 'gray.600');
 
     const addTab = () => {
-        const newTab = new UTab(`Новая вкладка ${appData.tabs.length + 1}`,`hsl(${Math.random() * 360}, 70%, 50%)`, appData.tabs.length+1);
-        console.log("newTab");
-        console.log(newTab);
-         setAppData(prevState => {
-             prevState.tabs = [...prevState.tabs, newTab];
-         return prevState;});
+        const newTab = new UTab(`Новая вкладка ${appData.tabs.length + 1}`, `hsl(${Math.random() * 360}, 70%, 50%)`, appData.tabs.length + 1);
+        setAppData(prevState => {
+            prevState.tabs = [...prevState.tabs, newTab];
+            return prevState;
+        });
 
 
         setActiveTab(appData.tabs.length);
     };
 
     const removeTab = (index) => {
-        console.log("RemoveTab Index="+index);
+        console.log("removeTab");
+        console.log("oldTabs");
+        console.log(appData.tabs);
+        console.log("index "+index);
+        const newTabs =[...appData.tabs.filter((_, i) => i !== index)];
+        console.log("newTabs");
+        console.log(newTabs);
+
         setAppData(prevState => {
-            prevState.tabs = [...prevState.tabs.filter((_, i) => i !== index)];
+            prevState.tabs = newTabs;
             return prevState;
         });
-        setActiveTab(Math.min(activeTab, appData.tabs.length - 2));
+
+        setActiveTab(prevActive => {
+            if (newTabs.length === 0) return 0; // Если вкладок не осталось
+            if (prevActive === index) return Math.min(index, newTabs.length - 1);
+            return prevActive > index ? prevActive - 1 : prevActive;
+        });
+        //setActiveTab(Math.min(activeTab, appData.tabs.length - 2));
     };
 
     return (
@@ -63,6 +75,7 @@ const MatrixTabs = (props) => {
         >
             {/* Панель вкладок */}
             <Tabs
+                key={appData.tabs.length}
                 index={activeTab}
                 onChange={setActiveTab}
                 variant="enclosed-colored"
@@ -76,14 +89,14 @@ const MatrixTabs = (props) => {
                     {appData.tabs.map((tab, index) => (
                         <Tab
                             key={tab.id}
-                            _selected={{ color: 'white', bg: tab.color }}
+                            _selected={{color: 'white', bg: tab.color}}
                             minWidth="150px"
                             position="relative"
                         >
                             <Text isTruncated>{tab.title}</Text>
                             <IconButton
                                 aria-label="Удалить вкладку"
-                                icon={<CloseIcon boxSize={2.5} />}
+                                icon={<CloseIcon boxSize={2.5}/>}
                                 size="xs"
                                 ml={2}
                                 borderRadius="full"
@@ -91,12 +104,12 @@ const MatrixTabs = (props) => {
                                     e.stopPropagation();
                                     removeTab(index);
                                 }}
-                                _hover={{ bg: 'rgba(0,0,0,0.1)' }}
+                                _hover={{bg: 'rgba(0,0,0,0.1)'}}
                             />
                         </Tab>
                     ))}
-                    <Tab onClick={addTab} _hover={{ bg: 'gray.100' }}>
-                        <AddIcon boxSize={3} />
+                    <Tab onClick={addTab} _hover={{bg: 'gray.100'}}>
+                        <AddIcon boxSize={3}/>
                     </Tab>
                 </TabList>
 
