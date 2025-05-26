@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
  import MatrixTabs from "./features/matrix/components/MatrixTabs";
  import LoadingSpinner from "./features/matrix/components/LoadingSpinner";
- import {readAppData} from "./features/matrix/services/ioService";
+ import {readAppData, saveAppData} from "./features/matrix/services/ioService";
 
 function App() {
     const [isLoading, setIsLoading] = useState(true)
@@ -21,7 +21,15 @@ function App() {
     return (
         <>
             {isLoading && <LoadingSpinner/>}
-            {!isLoading && <MatrixTabs appData={appData}/>}
+            {!isLoading && <MatrixTabs tabs={appData.tabs} onChangeData={(tabs)=>{
+                setAppData((prev)=>{
+                    prev.tabs=tabs;
+                    if (process.env.NODE_ENV !== 'development') {
+                        saveAppData(prev);
+                    }
+                    return prev;
+                })
+            }}/>}
         </>
     );
 }
