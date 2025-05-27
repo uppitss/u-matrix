@@ -46,6 +46,7 @@ const MatrixTabs = (props) => {
                 key={tabs.length}
                 value={activeTab}
                 fitted
+                flex="1"
                 onValueChange={(e) => setActiveTab(e.value)}>
                 <Tabs.List>
                     {
@@ -82,6 +83,7 @@ const MatrixTabs = (props) => {
                     tabs.map((tab, index) => {
                         return <Tabs.Content
                             key={"tabs_content_" + tab.id}
+                            asChild
                             value={tab.id}>
                             <Grid
                                 key={"tabs_content_grid_"+tab.id}
@@ -101,7 +103,7 @@ const MatrixTabs = (props) => {
                                         p={4}
                                         overflow="auto" // Добавляем скролл при необходимости
                                     >
-                                        <Heading size="md" mb={4}>{title}</Heading>
+                                        <Heading size="md" mb={4}>{title} {tab.title}</Heading>
                                         {/* Место для будущих задач */}
                                     </GridItem>
                                 ))}
