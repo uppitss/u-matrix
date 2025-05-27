@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-    Flex,
-    Spinner,
-    Text,
-    useBreakpointValue
-} from '@chakra-ui/react';
+import {Flex, Spinner,Text, useBreakpointValue} from "@chakra-ui/react";
 
 const LoadingSpinner = () => {
     // Адаптивный размер текста

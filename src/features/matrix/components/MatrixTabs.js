@@ -1,71 +1,40 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
-    Grid,
-    GridItem,
-    Heading,
-    Text,
-    IconButton,
-    useColorModeValue,
-    Flex
-} from '@chakra-ui/react';
-import {AddIcon, CloseIcon} from '@chakra-ui/icons';
-import {readAppData, saveAppData} from "../services/ioService";
+import React, {useEffect, useState} from 'react';
 import {UTab} from "../model/UTab";
+import {Button, CloseButton, Flex, Grid, GridItem, Heading, Tabs} from "@chakra-ui/react";
+import {LuPlus} from "react-icons/lu";
+
 
 const MatrixTabs = (props) => {
-
-    const [appData, setAppData] = useState(props.appData);
-    const [activeTab, setActiveTab] = useState(0);
+    const [tabs, setTabs] = useState(props.tabs);
+    const [activeTab, setActiveTab] = useState(props.tabs.length > 0 ? props.tabs[0].id : -1);
 
     useEffect(() => {
-        console.log("Change APPDATA");
-        if (process.env.NODE_ENV !== 'development') {
-            saveAppData(appData);
-        }
-    }, [appData.tabs.length]);
+        props.onChangeData(tabs);
+    }, [tabs.length]);
 
-    const quadrantBg = useColorModeValue('gray.100', 'gray.700');
-    const quadrantBorder = useColorModeValue('gray.200', 'gray.600');
+    const quadrantBg = 'gray.100';
+    const quadrantBorder = 'gray.200';
 
     const addTab = () => {
-        const newTab = new UTab(`Новая вкладка ${appData.tabs.length + 1}`, `hsl(${Math.random() * 360}, 70%, 50%)`, appData.tabs.length + 1);
-        setAppData(prevState => {
-            prevState.tabs = [...prevState.tabs, newTab];
-            return prevState;
-        });
-
-
-        setActiveTab(appData.tabs.length);
+        const newTab = new UTab(`Новая вкладка ${tabs.length + 1}`, `hsl(${Math.random() * 360}, 70%, 50%)`, tabs.length + 1);
+        const newTabs = [...tabs, newTab];
+        setTabs(newTabs);
+        setActiveTab(newTab.id);
     };
 
-    const removeTab = (index) => {
-        console.log("removeTab");
-        console.log("oldTabs");
-        console.log(appData.tabs);
-        console.log("index "+index);
-        const newTabs =[...appData.tabs.filter((_, i) => i !== index)];
-        console.log("newTabs");
-        console.log(newTabs);
-
-        setAppData(prevState => {
-            prevState.tabs = newTabs;
-            return prevState;
-        });
+    const removeTab = (id) => {
+        const newTabs = [...tabs.filter((item) => item.id !== id)];
+        setTabs(newTabs);
 
         setActiveTab(prevActive => {
             if (newTabs.length === 0) return 0; // Если вкладок не осталось
-            if (prevActive === index) return Math.min(index, newTabs.length - 1);
-            return prevActive > index ? prevActive - 1 : prevActive;
+            if (prevActive === id) return Math.min(id, newTabs.length - 1);
+            return prevActive > id ? prevActive - 1 : prevActive;
         });
-        //setActiveTab(Math.min(activeTab, appData.tabs.length - 2));
     };
 
     return (
+
         <Flex
             direction="column"
             height="100vh" // Занимаем всю высоту viewport
@@ -73,61 +42,51 @@ const MatrixTabs = (props) => {
             p={4}
             margin="0 auto"
         >
-            {/* Панель вкладок */}
-            <Tabs
-                key={appData.tabs.length}
-                index={activeTab}
-                onChange={setActiveTab}
-                variant="enclosed-colored"
-                isLazy
-                display="flex"
-                flexDirection="column"
+            <Tabs.Root
+                key={tabs.length}
+                value={activeTab}
+                fitted
                 flex="1"
-                overflow="hidden"
-            >
-                <TabList overflowX="auto" overflowY="hidden">
-                    {appData.tabs.map((tab, index) => (
-                        <Tab
-                            key={tab.id}
-                            _selected={{color: 'white', bg: tab.color}}
-                            minWidth="150px"
-                            position="relative"
-                        >
-                            <Text isTruncated>{tab.title}</Text>
-                            <IconButton
-                                aria-label="Удалить вкладку"
-                                icon={<CloseIcon boxSize={2.5}/>}
-                                size="xs"
-                                ml={2}
-                                borderRadius="full"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    removeTab(index);
-                                }}
-                                _hover={{bg: 'rgba(0,0,0,0.1)'}}
-                            />
-                        </Tab>
-                    ))}
-                    <Tab onClick={addTab} _hover={{bg: 'gray.100'}}>
-                        <AddIcon boxSize={3}/>
-                    </Tab>
-                </TabList>
-
-                {/* Контент вкладок - теперь растягивается */}
-                <TabPanels
-                    flex="1"
-                    minHeight="0" // Важно для корректного растягивания в Flex
-                    overflow="hidden"
-                >
-                    {appData.tabs.map((tab) => (
-                        <TabPanel
-                            key={tab.id}
-                            p={0}
-                            height="100%"
-                            overflow="hidden"
-                        >
-                            {/* Компонент матрицы - теперь занимает всю высоту */}
+                onValueChange={(e) => setActiveTab(e.value)}>
+                <Tabs.List>
+                    {
+                        tabs.map((tab, index) => {
+                            return <Tabs.Trigger
+                                key={"tabs_trigger_" + tab.id}
+                                value={tab.id}>
+                                {tab.title}
+                                {" "}
+                                <CloseButton
+                                    as="span"
+                                    role="button"
+                                    size="2xs"
+                                    me="-2"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        removeTab(tab.id)
+                                    }}
+                                />
+                            </Tabs.Trigger>
+                        })
+                    }
+                    <Button
+                        alignSelf="center"
+                        ms="2"
+                        size="2xs"
+                        variant="ghost"
+                        onClick={addTab}
+                    >
+                        <LuPlus/>
+                    </Button>
+                </Tabs.List>
+                {
+                    tabs.map((tab, index) => {
+                        return <Tabs.Content
+                            key={"tabs_content_" + tab.id}
+                            asChild
+                            value={tab.id}>
                             <Grid
+                                key={"tabs_content_grid_"+tab.id}
                                 templateColumns="repeat(2, 1fr)"
                                 templateRows="repeat(2, 1fr)"
                                 gap={4}
@@ -136,7 +95,7 @@ const MatrixTabs = (props) => {
                             >
                                 {['Срочно и важно', 'Не срочно, но важно', 'Срочно, но не важно', 'Не срочно и не важно'].map((title, idx) => (
                                     <GridItem
-                                        key={idx}
+                                        key={"tabs_content_grid_item_"+tab.id+"_"+idx}
                                         bg={quadrantBg}
                                         borderWidth="1px"
                                         borderColor={quadrantBorder}
@@ -144,15 +103,17 @@ const MatrixTabs = (props) => {
                                         p={4}
                                         overflow="auto" // Добавляем скролл при необходимости
                                     >
-                                        <Heading size="md" mb={4}>{title}</Heading>
+                                        <Heading size="md" mb={4}>{title} {tab.title}</Heading>
                                         {/* Место для будущих задач */}
                                     </GridItem>
                                 ))}
                             </Grid>
-                        </TabPanel>
-                    ))}
-                </TabPanels>
-            </Tabs>
+
+
+                        </Tabs.Content>
+                    })
+                }
+            </Tabs.Root>
         </Flex>
     );
 };
