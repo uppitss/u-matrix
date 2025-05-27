@@ -1,12 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {UTab} from "../model/UTab";
-import {Button, CloseButton, Flex, Grid, GridItem, Heading, Tabs} from "@chakra-ui/react";
-import {LuPlus} from "react-icons/lu";
+import {Button, CloseButton, Flex, Grid, GridItem, Heading, IconButton, Input, Tabs, Text} from "@chakra-ui/react";
+import {LuCheck, LuPlus, LuTrash, LuX} from "react-icons/lu";
+import {TabTitle} from "./TabTitle";
+import {TabEdit} from "./TabEdit";
 
 
 const MatrixTabs = (props) => {
     const [tabs, setTabs] = useState(props.tabs);
     const [activeTab, setActiveTab] = useState(props.tabs.length > 0 ? props.tabs[0].id : -1);
+    const [editedTab, setEditedTab] = useState(undefined);
 
     useEffect(() => {
         props.onChangeData(tabs);
@@ -54,18 +57,25 @@ const MatrixTabs = (props) => {
                             return <Tabs.Trigger
                                 key={"tabs_trigger_" + tab.id}
                                 value={tab.id}>
-                                {tab.title}
-                                {" "}
-                                <CloseButton
-                                    as="span"
-                                    role="button"
-                                    size="2xs"
-                                    me="-2"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        removeTab(tab.id)
+                                {
+                                    editedTab === tab.id &&
+                                    <TabEdit tab={tab}
+                                             onConfirm={(value) => {
+                                                 setEditedTab(undefined);
+                                                 alert(value);
+                                             }}
+                                             onCancel={() => {
+                                                setEditedTab(undefined);
+                                             }}/>
+                                }
+                                {
+                                    editedTab !== tab.id && <TabTitle tab={tab} onEdit={() => {
+                                        setEditedTab(tab.id)
                                     }}
-                                />
+                                                                      onRemove={() => {
+                                                                          removeTab(tab.id)
+                                                                      }}/>
+                                }
                             </Tabs.Trigger>
                         })
                     }
@@ -86,7 +96,7 @@ const MatrixTabs = (props) => {
                             asChild
                             value={tab.id}>
                             <Grid
-                                key={"tabs_content_grid_"+tab.id}
+                                key={"tabs_content_grid_" + tab.id}
                                 templateColumns="repeat(2, 1fr)"
                                 templateRows="repeat(2, 1fr)"
                                 gap={4}
@@ -95,7 +105,7 @@ const MatrixTabs = (props) => {
                             >
                                 {['Срочно и важно', 'Не срочно, но важно', 'Срочно, но не важно', 'Не срочно и не важно'].map((title, idx) => (
                                     <GridItem
-                                        key={"tabs_content_grid_item_"+tab.id+"_"+idx}
+                                        key={"tabs_content_grid_item_" + tab.id + "_" + idx}
                                         bg={quadrantBg}
                                         borderWidth="1px"
                                         borderColor={quadrantBorder}
@@ -108,8 +118,6 @@ const MatrixTabs = (props) => {
                                     </GridItem>
                                 ))}
                             </Grid>
-
-
                         </Tabs.Content>
                     })
                 }
