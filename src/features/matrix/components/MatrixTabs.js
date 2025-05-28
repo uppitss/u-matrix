@@ -55,6 +55,7 @@ const MatrixTabs = (props) => {
                     {
                         tabs.map((tab, index) => {
                             return <Tabs.Trigger
+                                colorPalette={tab.color}
                                 key={"tabs_trigger_" + tab.id}
                                 value={tab.id}>
                                 {
