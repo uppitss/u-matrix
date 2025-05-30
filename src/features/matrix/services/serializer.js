@@ -1,4 +1,4 @@
-import {AppData} from "../model/AppData";
+import {AppData} from "../domain/entities/AppData";
 
 
 export function serialize(data) {

@@ -1,7 +1,7 @@
 /* Сервис отвечающий за чтение и запись данных */
 
 import {deserialize, serialize} from "./serializer";
-import {AppData} from "../model/AppData";
+import {AppData} from "../domain/entities/AppData";
 import App from "../../../App";
 
 const filePath = "matrix.json"

@@ -1,34 +1,22 @@
 import React, {useEffect, useMemo, useState} from 'react';
- import MatrixTabs from "./features/matrix/components/MatrixTabs";
- import LoadingSpinner from "./features/matrix/components/LoadingSpinner";
- import {readAppData, saveAppData} from "./features/matrix/services/ioService";
+import MatrixTabs from "./features/matrix/components/MatrixTabs";
+import LoadingSpinner from "./features/matrix/components/LoadingSpinner";
+import {useAppData} from "./features/matrix/hooks/useAppData";
 
-function App() {
-    const [isLoading, setIsLoading] = useState(true)
-    const [appData, setAppData] = useState(undefined)
-
-    useMemo(async () => {
-        const appData = await readAppData();
-        setAppData(appData)
-    },[])
-    useEffect(()=>{
-        if (appData !== undefined){
-            setIsLoading(false);
-        }
-    },[appData]);
-
+function App({service}) {
+   const {appData,isLoading,saveAppData} = useAppData(service)
 
     return (
         <>
             {isLoading && <LoadingSpinner/>}
             {!isLoading && <MatrixTabs tabs={appData.tabs} onChangeData={(tabs)=>{
-                setAppData((prev)=>{
-                    prev.tabs=tabs;
-                    if (process.env.NODE_ENV !== 'development') {
-                        saveAppData(prev);
-                    }
-                    return prev;
-                })
+                // setAppData((prev)=>{
+                //     prev.tabs=tabs;
+                     if (process.env.NODE_ENV !== 'development') {
+                         saveAppData(prev);
+                     }
+                //     return prev;
+                // })
             }}/>}
         </>
     );

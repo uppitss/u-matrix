@@ -1,5 +1,5 @@
-import { QUADRANTS } from '../constants/quadrants';
-import {generateId} from "../utils/idGenerator";
+import { QUADRANTS } from '@/features/matrix/domain/constants/quadrants';
+import {generateId} from "../../utils/idGenerator";
 
 export class UTask {
     constructor({

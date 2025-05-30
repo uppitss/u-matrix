@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {UTab} from "../model/UTab";
+import {UTab} from "../domain/entities/UTab";
 import {Button, CloseButton, Flex, Grid, GridItem, Heading, IconButton, Input, Tabs, Text} from "@chakra-ui/react";
 import {LuCheck, LuPlus, LuTrash, LuX} from "react-icons/lu";
 import {TabTitle} from "./TabTitle";
