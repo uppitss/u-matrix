@@ -19,7 +19,6 @@ export const useAppData = (service) => {
         service.saveData(data);
     }
 
-
     return {
         appData,
         isLoading,

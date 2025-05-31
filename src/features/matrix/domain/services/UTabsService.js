@@ -1,32 +1,64 @@
-import {UTab} from "@/features/matrix/domain/entities/UTab";
+import {UTab} from "../entities/UTab";
 
 export class UTabsService {
-    constructor(repository) {
-        this.repository = repository;
+    constructor(appDataService) {
+        this.appDataService = appDataService;
+        this.tabListeners = [];
+
     }
 
-    async createTab(title, color, position) {
-        const newTab = new UTab(title, color, position);
-        return this.repository.addTab(newTab);
+    getTabs() {
+        return this.appDataService.getTabs();
     }
 
-    async deleteTab(id) {
-        if (!id) throw new Error('Tab ID is required');
-        return this.repository.removeTab(id);
+    addTab(tabs) {
+        // Логика добавления...
+        const newTab = new UTab(`Новая вкладка ${tabs.length + 1}`, `hsl(${Math.random() * 360}, 70%, 50%)`, tabs.length + 1);
+        const newTabId = newTab.id;
+        const newTabs = [...tabs, newTab];
+        this._notifyTabChanged('added', newTabs);
+        return {newTabId, newTabs}
     }
 
-    async renameTab(id, newTitle) {
-        const tabs = await this.repository.getTabs();
-        const tab = tabs.find(t => t.id === id);
-        if (!tab) throw new Error('Tab not found');
+    removeTab(removedTabId, activeTabId, tabs) {
+        const newTabs = [...tabs.filter((item) => item.id !== removedTabId)];
+        let newActiveTabId = -1;
+        if (newTabs.length !== 0) {
+            // Если вкладки еще остались
+            //TODO Решение неплохое, но как будто бы не достаточно хорошо работает. Обернуть тестами. Переделать, если надо.
+            if (activeTabId === removedTabId) {
+                newActiveTabId = newTabs[0].id;
+            } else {
+                newActiveTabId = activeTabId > removedTabId ? activeTabId - 1 : activeTabId;
+            }
+        }
+        this._notifyTabChanged('removed', newTabs);
+        return {newActiveTabId,newTabs}
 
-        const updatedTab = new Tab(
-            tab.id,
-            newTitle,
-            tab.color,
-            tab.createdAt
-        );
 
-        return this.repository.updateTab(updatedTab);
+    }
+
+    renameTab(id, title,tabs) {
+        const newTabs = tabs.map((item)=>{
+            if (item.id === id){
+                item.title = title;
+            }
+            return item;
+        });
+
+        this._notifyTabChanged('renamed', newTabs);
+        return newTabs;
+
+    }
+
+    onTabsChanged(listener) {
+        this.tabListeners.push(listener);
+        return () => {
+            this.tabListeners = this.tabListeners.filter(l => l !== listener);
+        };
+    }
+
+    _notifyTabChanged(action, tabs) {
+        this.tabListeners.forEach(listener => listener(action, tabs));
     }
 }
