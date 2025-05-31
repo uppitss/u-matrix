@@ -1,4 +1,4 @@
-import {generateId} from "../../utils/idGenerator";
+import {generateId} from "@/features/matrix/domain/utils/idGenerator";
 
 export class UTab {
     constructor(title = 'Новая вкладка',
