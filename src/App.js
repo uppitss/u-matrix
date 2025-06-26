@@ -1,35 +1,25 @@
 import React, {useEffect, useMemo, useState} from 'react';
- import MatrixTabs from "./features/matrix/components/MatrixTabs";
- import LoadingSpinner from "./features/matrix/components/LoadingSpinner";
- import {readAppData, saveAppData} from "./features/matrix/services/ioService";
+import MatrixTabs from "./features/matrix/components/MatrixTabs";
+import LoadingSpinner from "./features/matrix/components/LoadingSpinner";
+import {useAppData} from "./features/matrix/hooks/useAppData";
+import {UTabsService} from "./features/matrix/domain/services/UTabsService";
 
-function App() {
-    const [isLoading, setIsLoading] = useState(true)
-    const [appData, setAppData] = useState(undefined)
+function App({service}) {
+    const {appData, isLoading, saveAppData} = useAppData(service)
+    const handleTabModified = (action, tabs) => {
+        // if (process.env.NODE_ENV !== 'development') {
+        //     saveAppData(prev);
+        // }
+        console.log("NeedSave APPDATA. Action="+action);
+        console.log(tabs);
+    }
 
-    useMemo(async () => {
-        const appData = await readAppData();
-        setAppData(appData)
-    },[])
-    useEffect(()=>{
-        if (appData !== undefined){
-            setIsLoading(false);
-        }
-    },[appData]);
-
+    const tabsService = new UTabsService(service, handleTabModified);
 
     return (
         <>
             {isLoading && <LoadingSpinner/>}
-            {!isLoading && <MatrixTabs tabs={appData.tabs} onChangeData={(tabs)=>{
-                setAppData((prev)=>{
-                    prev.tabs=tabs;
-                    if (process.env.NODE_ENV !== 'development') {
-                        saveAppData(prev);
-                    }
-                    return prev;
-                })
-            }}/>}
+            {!isLoading && <MatrixTabs service={tabsService} />}
         </>
     );
 }

@@ -1,40 +1,26 @@
 import React, {useEffect, useState} from 'react';
-import {UTab} from "../model/UTab";
+import {UTab} from "../domain/entities/UTab";
 import {Button, CloseButton, Flex, Grid, GridItem, Heading, IconButton, Input, Tabs, Text} from "@chakra-ui/react";
 import {LuCheck, LuPlus, LuTrash, LuX} from "react-icons/lu";
 import {TabTitle} from "./TabTitle";
 import {TabEdit} from "./TabEdit";
+import {useTabs} from "../hooks/useTabs";
 
 
-const MatrixTabs = (props) => {
-    const [tabs, setTabs] = useState(props.tabs);
-    const [activeTab, setActiveTab] = useState(props.tabs.length > 0 ? props.tabs[0].id : -1);
-    const [editedTab, setEditedTab] = useState(undefined);
-
-    useEffect(() => {
-        props.onChangeData(tabs);
-    }, [tabs.length]);
+const MatrixTabs = ({service}) => {
+    const {
+        tabs,
+        activeTabId,
+        editedTabId,
+        addTab,
+        removeTab,
+        renameTab,
+        changeTab,
+        editTab
+    } = useTabs(service)
 
     const quadrantBg = 'gray.100';
     const quadrantBorder = 'gray.200';
-
-    const addTab = () => {
-        const newTab = new UTab(`Новая вкладка ${tabs.length + 1}`, `hsl(${Math.random() * 360}, 70%, 50%)`, tabs.length + 1);
-        const newTabs = [...tabs, newTab];
-        setTabs(newTabs);
-        setActiveTab(newTab.id);
-    };
-
-    const removeTab = (id) => {
-        const newTabs = [...tabs.filter((item) => item.id !== id)];
-        setTabs(newTabs);
-
-        setActiveTab(prevActive => {
-            if (newTabs.length === 0) return 0; // Если вкладок не осталось
-            if (prevActive === id) return Math.min(id, newTabs.length - 1);
-            return prevActive > id ? prevActive - 1 : prevActive;
-        });
-    };
 
     return (
 
@@ -47,10 +33,10 @@ const MatrixTabs = (props) => {
         >
             <Tabs.Root
                 key={tabs.length}
-                value={activeTab}
+                value={activeTabId}
                 fitted
                 flex="1"
-                onValueChange={(e) => setActiveTab(e.value)}>
+                onValueChange={(e) => changeTab(e.value)}>
                 <Tabs.List>
                     {
                         tabs.map((tab, index) => {
@@ -59,23 +45,25 @@ const MatrixTabs = (props) => {
                                 key={"tabs_trigger_" + tab.id}
                                 value={tab.id}>
                                 {
-                                    editedTab === tab.id &&
+                                    editedTabId === tab.id &&
                                     <TabEdit tab={tab}
                                              onConfirm={(value) => {
-                                                 setEditedTab(undefined);
-                                                 alert(value);
+                                                 renameTab(tab.id, value);
+                                                 editTab(undefined);
                                              }}
                                              onCancel={() => {
-                                                setEditedTab(undefined);
+                                                 editTab(undefined);
                                              }}/>
                                 }
                                 {
-                                    editedTab !== tab.id && <TabTitle tab={tab} onEdit={() => {
-                                        setEditedTab(tab.id)
-                                    }}
-                                                                      onRemove={() => {
-                                                                          removeTab(tab.id)
-                                                                      }}/>
+                                    editedTabId !== tab.id &&
+                                    <TabTitle tab={tab}
+                                              onEdit={() => {
+                                                  editTab(tab.id)
+                                              }}
+                                              onRemove={() => {
+                                                  removeTab(tab.id)
+                                              }}/>
                                 }
                             </Tabs.Trigger>
                         })
