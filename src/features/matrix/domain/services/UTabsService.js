@@ -1,10 +1,9 @@
 import {UTab} from "../entities/UTab";
 
 export class UTabsService {
-    constructor(appDataService) {
+    constructor(appDataService,onTabModified) {
         this.appDataService = appDataService;
-        this.tabListeners = [];
-
+        this.onTabModified = onTabModified; // Колбэк для уведомлений
     }
 
     getTabs() {
@@ -16,7 +15,7 @@ export class UTabsService {
         const newTab = new UTab(`Новая вкладка ${tabs.length + 1}`, `hsl(${Math.random() * 360}, 70%, 50%)`, tabs.length + 1);
         const newTabId = newTab.id;
         const newTabs = [...tabs, newTab];
-        this._notifyTabChanged('added', newTabs);
+        this.onTabModified('added', newTabs);
         return {newTabId, newTabs}
     }
 
@@ -32,7 +31,7 @@ export class UTabsService {
                 newActiveTabId = activeTabId > removedTabId ? activeTabId - 1 : activeTabId;
             }
         }
-        this._notifyTabChanged('removed', newTabs);
+        this.onTabModified('removed', newTabs);
         return {newActiveTabId,newTabs}
 
 
@@ -46,19 +45,8 @@ export class UTabsService {
             return item;
         });
 
-        this._notifyTabChanged('renamed', newTabs);
+        this.onTabModified('renamed', newTabs);
         return newTabs;
 
-    }
-
-    onTabsChanged(listener) {
-        this.tabListeners.push(listener);
-        return () => {
-            this.tabListeners = this.tabListeners.filter(l => l !== listener);
-        };
-    }
-
-    _notifyTabChanged(action, tabs) {
-        this.tabListeners.forEach(listener => listener(action, tabs));
     }
 }

@@ -5,18 +5,21 @@ import {useAppData} from "./features/matrix/hooks/useAppData";
 import {UTabsService} from "./features/matrix/domain/services/UTabsService";
 
 function App({service}) {
-   const {appData,isLoading,saveAppData} = useAppData(service)
+    const {appData, isLoading, saveAppData} = useAppData(service)
+    const handleTabModified = (action, tabs) => {
+        // if (process.env.NODE_ENV !== 'development') {
+        //     saveAppData(prev);
+        // }
+        console.log("NeedSave APPDATA. Action="+action);
+        console.log(tabs);
+    }
 
-    const tabsService = new UTabsService(service);
+    const tabsService = new UTabsService(service, handleTabModified);
 
     return (
         <>
             {isLoading && <LoadingSpinner/>}
-            {!isLoading && <MatrixTabs service={tabsService}  onChangeData={(tabs)=>{
-                     if (process.env.NODE_ENV !== 'development') {
-                         saveAppData(prev);
-                     }
-            }}/>}
+            {!isLoading && <MatrixTabs service={tabsService} />}
         </>
     );
 }
